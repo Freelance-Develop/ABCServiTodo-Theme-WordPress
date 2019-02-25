@@ -1,0 +1,24 @@
+{
+  "name": "jango-theme",
+  "version": "1.0.0",
+  "description": "Tema base para el desarrollo de plantillas en WordPress usando Gulp y Sass",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gulp",
+    "sass"
+  ],
+  "author": "Juan Carlos Jiménez Gutiérrez <jcjimenez29@misena.edu.co> (https://twitter.com/Jce_)",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.26.3",
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-wp-pot": "^2.3.4"
+  }
+}
