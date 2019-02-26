@@ -45,7 +45,7 @@ const BROWSERS = [
 ];
 
 // Tasks: Convert Sass to CSS
-gulp .task( 'sass', function () {
+function scss() {
   return gulp .src( PATHS .styles .src )
     .pipe( sass( { outputStyle: 'compressed' } ) .on( 'error', sass .logError ) )
     .pipe( sourcemaps .init() )
@@ -53,9 +53,9 @@ gulp .task( 'sass', function () {
     .pipe( rename( { suffix: '.min' } ) )
     .pipe( sourcemaps .write( './' ) )
     .pipe( gulp .dest( PATHS .styles .dest ))
-});
+}
 // Tasks: Live Server
-gulp.task( 'browsersync', function() {
+function browser() {
     var files = [
       PATHS .styles .min,
       PATHS .scripts .src,
@@ -66,10 +66,15 @@ gulp.task( 'browsersync', function() {
         proxy: WORDPRESS .localDomain,
         open: false
     });
-});
+
+    watchFiles();
+
+    //watch('./sass/**/*.scss', css);
+    //watch('./js/*.js', js).on('change', browserSync.reload);
+}
 
 // Task: Generate Tranlation File
-gulp .task( 'wppot', function() {
+function wpot() {
 	return gulp .src( PATHS .php .src )
 		.pipe( wppot( {
 				domain: WORDPRESS .textdomain,
@@ -78,11 +83,14 @@ gulp .task( 'wppot', function() {
 			})
 		)
 		.pipe( gulp .dest( './languages/' + WORDPRESS .textdomain + '.pot' ) )
-});
-
-function watchFiles() {
-  gulp .watch( PATHS .styles .src, gulp .parallel( 'sass' ) ) ;
-  gulp .watch( PATHS .php .src, gulp .parallel( 'wppot' ) );
 }
 
-gulp .task( 'default', gulp .parallel( 'sass', 'browsersync', watchFiles ) );
+function watchFiles() {
+  gulp .watch( PATHS .styles .src, gulp .parallel( 'styles' ) ) ;
+  gulp .watch( PATHS .php .src, gulp .parallel( 'wpot' ) );
+}
+
+// Exports
+exports .styles = scss;
+exports .wpot = wpot;
+exports .default = browser;
