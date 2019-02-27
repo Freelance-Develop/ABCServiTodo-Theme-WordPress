@@ -10,7 +10,8 @@ var gulp = require( 'gulp' ),
     babel = require( 'gulp-babel' )
     concat = require( 'gulp-concat' ),
     stripdebug = require( 'gulp-strip-debug' ),
-    uglify = require( 'gulp-uglify' );
+    uglify = require( 'gulp-uglify' ),
+    imagemin = require( 'gulp-imagemin' );
 
 // Variables
 const WORDPRESS = {
@@ -32,6 +33,14 @@ const PATHS = {
   scripts: {
     src  : './src/assets/js/*.js',
     dest : './dist/assets/js/'
+  },
+  images: {
+      src  : [
+          './src/assets/images/*.{jpg,jpeg,png,gif,svg}',
+          '!./src/assets/images/full-stack.jpeg',
+          '!./src/assets/images/productos/'
+      ],
+      dest : './dist/assets/images/'
   }
 };
 
@@ -64,6 +73,7 @@ function browser() {
     var files = [
       PATHS .styles .min,
       PATHS .scripts .src,
+      PATHS .images .src,
       PATHS .php .src
     ];
 
@@ -90,6 +100,12 @@ function scripts() {
         .pipe( rename( { suffix: '.min' } ) )
         .pipe( gulp .dest( PATHS .scripts .dest, { sourcemaps: true } ) );
 }
+// Task: Minificación de imágenes
+function images() {
+    return gulp .src( PATHS .images .src, { allowEmpty: true } )
+        .pipe( imagemin() )
+        .pipe( gulp .dest( PATHS .images .dest ) );
+}
 
 // Task: Generate Tranlation File
 function wpot() {
@@ -106,11 +122,13 @@ function wpot() {
 function watchFiles() {
   gulp .watch( PATHS .styles .src, gulp .parallel( 'styles' ) ) ;
   gulp .watch( PATHS .scripts .src, gulp .parallel( 'scripts' ) ) ;
+  gulp .watch( PATHS .images .src, gulp .parallel( 'images' ) ) .on( 'change', browsersync .reload );
   gulp .watch( PATHS .php .src, gulp .parallel( 'wpot' ) );
 }
 
 // Exports
 exports .styles = scss;
 exports .scripts = scripts;
+exports .images = images;
 exports .wpot = wpot;
 exports .default = browser;
