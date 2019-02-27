@@ -5,8 +5,12 @@ var gulp = require( 'gulp' ),
     autoprefixer = require( 'gulp-autoprefixer' ),
     sourcemaps = require( 'gulp-sourcemaps' ),
     rename = require( 'gulp-rename' ),
-    browsersync = require( 'browser-sync' ).create(),
-    wppot = require('gulp-wp-pot');
+    browsersync = require( 'browser-sync' ) .create(),
+    wppot = require( 'gulp-wp-pot' ),
+    babel = require( 'gulp-babel' )
+    concat = require( 'gulp-concat' ),
+    stripdebug = require( 'gulp-strip-debug' ),
+    uglify = require( 'gulp-uglify' );
 
 // Variables
 const WORDPRESS = {
@@ -26,7 +30,8 @@ const PATHS = {
     src : './**/*.php'
   },
   scripts: {
-    src : './src/assets/js/*.js'
+    src  : './src/assets/js/*.js',
+    dest : './dist/assets/js/'
   }
 };
 
@@ -72,6 +77,19 @@ function browser() {
     //watch('./sass/**/*.scss', css);
     //watch('./js/*.js', js).on('change', browserSync.reload);
 }
+// Task: Concatena y Minifica archivos JavaScript
+function scripts() {
+    return gulp .src( PATHS .scripts .src, { sourcemaps: true } )
+        .pipe( babel({
+            presets: [ '@babel/env' ]
+        }))
+        .pipe( concat( 'build.js' ) )
+        .pipe( stripdebug() )
+        .pipe( gulp .dest( PATHS .scripts .dest, { sourcemaps: true } ) )
+        .pipe( uglify() )
+        .pipe( rename( { suffix: '.min' } ) )
+        .pipe( gulp .dest( PATHS .scripts .dest, { sourcemaps: true } ) );
+}
 
 // Task: Generate Tranlation File
 function wpot() {
@@ -87,10 +105,12 @@ function wpot() {
 
 function watchFiles() {
   gulp .watch( PATHS .styles .src, gulp .parallel( 'styles' ) ) ;
+  gulp .watch( PATHS .scripts .src, gulp .parallel( 'scripts' ) ) ;
   gulp .watch( PATHS .php .src, gulp .parallel( 'wpot' ) );
 }
 
 // Exports
 exports .styles = scss;
+exports .scripts = scripts;
 exports .wpot = wpot;
 exports .default = browser;
