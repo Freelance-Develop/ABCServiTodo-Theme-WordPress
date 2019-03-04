@@ -2,6 +2,10 @@
     if ( ! function_exists( 'jtabcst_scripts' ) ) :
         function jtabcst_scripts() {
             wp_enqueue_style(
+                'jango-normalize',
+                get_template_directory_uri(). '/dist/assets/vendor/normalize.min.css'
+            );
+            wp_enqueue_style(
                 'jango-css',
                 get_template_directory_uri(). '/dist/assets/css/master.min.css'
             );

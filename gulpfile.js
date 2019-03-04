@@ -11,12 +11,13 @@ var gulp = require( 'gulp' ),
     concat = require( 'gulp-concat' ),
     stripdebug = require( 'gulp-strip-debug' ),
     uglify = require( 'gulp-uglify' ),
-    imagemin = require( 'gulp-imagemin' );
+    imagemin = require( 'gulp-imagemin' ),
+    minifyCSS = require('gulp-csso');
 
 // Variables
 const WORDPRESS = {
   localDomain : 'http://localhost/projects/abcservitodo.wp/',
-  textdomain  : 'jango',
+  textdomain  : 'jt-abcservitodo',
   admin       : 'Juan Carlos Jiménez Gutiérrez <jcjimenez29@misena.edu.co>',
   team        : 'Juan Carlos Jiménez Gutiérrez <jcjimenez29@misena.edu.co>'
 }
@@ -41,6 +42,12 @@ const PATHS = {
           '!./src/assets/images/productos/'
       ],
       dest : './dist/assets/images/'
+  },
+  vendors: {
+      normalize: {
+          src  : './node_modules/normalize.css/normalize.css',
+          dest : './dist/assets/vendor/'
+      }
   }
 };
 
@@ -57,7 +64,13 @@ const BROWSERS = [
     'android >= 4',
     'bb >= 10'
 ];
-
+// Task: Normalize
+function normalize() {
+    return gulp .src( PATHS . vendors . normalize .src )
+      .pipe( minifyCSS() )
+      .pipe( rename( { suffix: '.min' } ) )
+      .pipe( gulp .dest( PATHS .vendors .normalize .dest ) );
+}
 // Tasks: Convert Sass to CSS
 function scss() {
   return gulp .src( PATHS .styles .src )
@@ -66,7 +79,7 @@ function scss() {
     .pipe( autoprefixer( { browsers: BROWSERS } ) )
     .pipe( rename( { suffix: '.min' } ) )
     .pipe( sourcemaps .write( './' ) )
-    .pipe( gulp .dest( PATHS .styles .dest ))
+    .pipe( gulp .dest( PATHS .styles .dest ) );
 }
 // Tasks: Live Server
 function browser() {
@@ -120,15 +133,16 @@ function wpot() {
 }
 
 function watchFiles() {
-  gulp .watch( PATHS .styles .src, gulp .parallel( 'styles' ) ) ;
-  gulp .watch( PATHS .scripts .src, gulp .parallel( 'scripts' ) ) ;
-  gulp .watch( PATHS .images .src, gulp .parallel( 'images' ) ) .on( 'change', browsersync .reload );
-  gulp .watch( PATHS .php .src, gulp .parallel( 'wpot' ) );
+  gulp .watch( PATHS .styles .src, gulp .parallel( scss ) ) ;
+  gulp .watch( PATHS .scripts .src, gulp .parallel( scripts ) ) ;
+  gulp .watch( PATHS .images .src, gulp .parallel( images ) ) .on( 'change', browsersync .reload );
 }
 
 // Exports
-exports .styles = scss;
-exports .scripts = scripts;
-exports .images = images;
-exports .wpot = wpot;
-exports .default = browser;
+exports .default = gulp .series(
+    images,
+    gulp .parallel( normalize, scss ),
+    gulp .parallel( scripts ),
+    wpot,
+    browser
+);
