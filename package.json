@@ -1,7 +1,7 @@
 {
-  "name": "jango-theme",
+  "name": "jt-abcservitodo",
   "version": "1.0.0",
-  "description": "Tema base para el desarrollo de plantillas en WordPress usando Gulp y Sass",
+  "description": "Plantilla Oficial de WordPress para ABCServiTodo, usando Gulp y Sass",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
